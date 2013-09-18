@@ -17,7 +17,7 @@ func main() {
     }
 
     players := []byte {'X','O'}
-    for !full(&board) {
+    for {
         for _, player := range players {
             printBoard(&board)
             fmt.Println("Choose a position to play in:")
@@ -26,13 +26,15 @@ func main() {
             row, col := getValidInput(&board)
             board[row][col] = player
             if winner(&board, player) {
+                printBoard(&board)
                 fmt.Println("Nice! Player " + string(player) + ", you won!")
+                os.Exit(0)
+            } else if full(&board) {
+                fmt.Println("Cats game!")
                 os.Exit(0)
             }
         }
     }
-    fmt.Println("Cats game!")
-    os.Exit(0)
 }
 
 func getValidInput(board *[3][3]byte) (int, int){
@@ -42,20 +44,17 @@ func getValidInput(board *[3][3]byte) (int, int){
         // Hack to get rid of the \n char
         cell = strings.Replace(cell, "\n", "", -1)
         splitcell := strings.Split(cell, " ")
-        fmt.Println(len(splitcell))
         if len(splitcell) < 2 {
             fmt.Println("You didn't specify a row/column!")
             fmt.Println("Please try again.")
             continue
         }
         row, err := strconv.Atoi(splitcell[0])
-        fmt.Println(row)
         if err != nil {
             fmt.Println("Incorrect format.")
             continue
         }
         col, err := strconv.Atoi(splitcell[1])
-        fmt.Println(col)
         if err != nil {
             fmt.Println(err)
             fmt.Println("Incorrect format.")
@@ -109,7 +108,7 @@ func winner(board *[3][3]byte, player byte) (bool) {
     return false
 }
 
-func full(board * [3][3]byte) (bool) {
+func full(board *[3][3]byte) (bool) {
     for row := range board {
         for col := range board[row] {
             if board[row][col] == ' ' {
